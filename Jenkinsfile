@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/jenkinspipeline/python-web-calculator.git'
+                git 'https://github.com/voodiga-rajachandra/jenkinspipeline.git'
             }
         }
 
