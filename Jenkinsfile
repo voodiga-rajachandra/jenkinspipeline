@@ -1,91 +1,71 @@
 pipeline {
 
     agent any
- 
-    environment {
 
-        VENV_DIR = "venv"  // Virtual environment directory
-
-    }
- 
     stages {
 
         stage('Clone Repository') {
-
             steps {
-
                 script {
-
                     git branch: 'main', url: 'https://github.com/voodiga-rajachandra/jenkinspipeline.git'
-
                 }
-
             }
-
         }
- 
-        stage('Setup Python Environment') {
 
+        stage('Install System Dependencies') {
             steps {
-
                 script {
-
                     sh '''
+                        # Update package list
+                        sudo apt update
 
-                        python3 -m venv $VENV_DIR  # Create virtual environment
+                        # Install Python and pip if not already installed
+                        sudo apt install -y python3 python3-pip
 
-                        source $VENV_DIR/bin/activate  # Activate venv
-
-                        pip install --upgrade pip  # Upgrade pip
-
-                        pip install -r requirements.txt  # Install dependencies
-
+                        # Upgrade pip
+                        python3 -m pip install --upgrade pip
                     '''
-
                 }
-
             }
-
         }
- 
+
+        stage('Install Python Dependencies') {
+            steps {
+                script {
+                    sh '''
+                        # Install dependencies globally
+                        sudo pip3 install -r requirements.txt
+                    '''
+                }
+            }
+        }
+
         stage('Deploy Application') {
-
             steps {
-
                 script {
-
                     sh '''
+                        # Stop old process if running
+                        pkill -f app.py || true
 
-                        pkill -f app.py || true  # Stop old process if running
-
-                        nohup $VENV_DIR/bin/python app.py > app.log 2>&1 &  # Run app in the background
-
+                        # Start the application in the background
+                        nohup python3 app.py > app.log 2>&1 &
                     '''
-
                 }
-
             }
-
         }
 
     }
- 
+
     post {
 
         success {
-
             echo 'Deployment successful! ✅'
-
         }
 
         failure {
-
             echo 'Deployment failed! ❌'
-
         }
 
     }
 
 }
-
- 
