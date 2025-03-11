@@ -16,13 +16,9 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        # Update package list
-                        sudo apt update
-
-                        # Install Python and pip if not already installed
+                        echo "Installing system dependencies..."
+                        echo "jenkins" | sudo -S apt update  # Run sudo in non-interactive mode
                         sudo apt install -y python3 python3-pip
-
-                        # Upgrade pip
                         python3 -m pip install --upgrade pip
                     '''
                 }
@@ -33,7 +29,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        # Install dependencies globally
+                        echo "Installing Python dependencies..."
                         sudo pip3 install -r requirements.txt
                     '''
                 }
@@ -44,10 +40,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        # Stop old process if running
+                        echo "Stopping old process..."
                         pkill -f app.py || true
 
-                        # Start the application in the background
+                        echo "Starting application..."
                         nohup python3 app.py > app.log 2>&1 &
                     '''
                 }
@@ -57,15 +53,12 @@ pipeline {
     }
 
     post {
-
         success {
             echo 'Deployment successful! ✅'
         }
-
         failure {
             echo 'Deployment failed! ❌'
         }
-
     }
 
 }
