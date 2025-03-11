@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     environment {
@@ -34,7 +33,7 @@ pipeline {
                     sh '''
                         echo "Setting up virtual environment..."
                         python3 -m venv $VENV_DIR
-                        source $VENV_DIR/bin/activate
+                        . $VENV_DIR/bin/activate  # Use "." instead of "source"
                         pip install --upgrade pip
                     '''
                 }
@@ -46,7 +45,7 @@ pipeline {
                 script {
                     sh '''
                         echo "Installing Python dependencies..."
-                        source $VENV_DIR/bin/activate
+                        . $VENV_DIR/bin/activate  # Use "." instead of "source"
                         pip install -r requirements.txt
                     '''
                 }
@@ -61,7 +60,7 @@ pipeline {
                         pkill -f app.py || true
 
                         echo "Starting application..."
-                        source $VENV_DIR/bin/activate
+                        . $VENV_DIR/bin/activate  # Use "." instead of "source"
                         nohup python3 app.py > app.log 2>&1 &
                     '''
                 }
@@ -78,5 +77,4 @@ pipeline {
             echo 'Deployment failed! ❌'
         }
     }
-
 }
